@@ -1,0 +1,25 @@
+.sidebar_bt{
+    background: rgb(5, 68, 104);
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+
+.accordion_list{
+    display: none;
+    background: rgb(5, 68, 104);
+    position: fixed;
+    overflow-y: auto;
+    top: 0;
+    right: 0;
+    width: 270px;
+    height: 100%;
+    padding: 0px 0;
+}
+
+.vertLine {
+    border-left: 2px solid black;
+    height: 20px;
+    position:absolute;
+    left: 50%;
+}
