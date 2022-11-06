@@ -1,0 +1,21 @@
+# frontend
+node_modules
+
+# backend
+
+# # database
+db.sqlite3
+
+# # cache files
+**_pycache__
+
+# # project environment
+.env
+
+# virtual environment
+venv
+env
+
+# Helper files
+edge.txt
+vertex.txt
