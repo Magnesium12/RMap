@@ -21,11 +21,11 @@ def give_directions(request):
     # print(request)
     # print(request.POST)
     # print(request.GET)
-    print(request.data['params'])
+    # print(request.data['params'])
 
     params = json.loads(request.data['params'])
 
-    print(params)
+    # print(params)
 
     # print(params)
 
@@ -43,9 +43,9 @@ def give_directions(request):
         except VertexDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         data = {"paths":[]}
-        print("here")
+        # print("here")
         for d,path in paths:
-            print(d)
+            # print(d)
             serializer = VertexSerializer(path, many = True)
             path_data = {"dist":d,"path":serializer.data}
             data["paths"].append(path_data)
@@ -239,7 +239,7 @@ def find_closest_vertex(x: int,y: int) -> Vertex:
 @api_view(['GET'])
 def search(request):
     name = request.GET.get("name")
-    print(name)
+    # print(name)
     vertices = Vertex.objects.all()
     matches = []
     for v in vertices:

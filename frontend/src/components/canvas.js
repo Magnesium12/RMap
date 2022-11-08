@@ -9,7 +9,6 @@ const Canvas = ({draw, height, width, canvas_click}) => {
     const [scale,setScale] = useState(1);
 
     useEffect(() => {
-        console.log("it ran")
         // const context1 = canvas_background.current.getContext('2d');
         // context1.scale(scale,scale)
         // background(context1, height, width);

@@ -15,43 +15,43 @@ import axios from "axios"
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 axios.defaults.xsrfCookieName = 'csrftoken'
 
-var dummy_path = [
-  {
-    x:900,
-    y:100,
-    name:"loc1"
-  },
-  {
-    x:200,
-    y:200,
-    name:""
-  },
-  {
-    x:100,
-    y:300,
-    name:"loc2"
-  }
-]
+// var dummy_path = [
+//   {
+//     x:900,
+//     y:100,
+//     name:"loc1"
+//   },
+//   {
+//     x:200,
+//     y:200,
+//     name:""
+//   },
+//   {
+//     x:100,
+//     y:300,
+//     name:"loc2"
+//   }
+// ]
 
-var dummy_path2 = [
-  {
-    x:100,
-    y:400,
-    name:"loc3"
-  },
-  {
-    x:200,
-    y:500,
-    name:"loc4"
-  },
-  {
-    x:100,
-    y:300,
-    name:"loc5"
-  }
-]
+// var dummy_path2 = [
+//   {
+//     x:100,
+//     y:400,
+//     name:"loc3"
+//   },
+//   {
+//     x:200,
+//     y:500,
+//     name:"loc4"
+//   },
+//   {
+//     x:100,
+//     y:300,
+//     name:"loc5"
+//   }
+// ]
 
-var dummy_paths = [dummy_path,dummy_path2];
+// var dummy_paths = [dummy_path,dummy_path2];
 
 
 
@@ -187,7 +187,6 @@ function App() {
       var data = await get_data()
       // console.log(raw_data)
       // var data = JSON.parse(raw_data)
-      console.log(data)
       draw_vertices(data.vertices,ww,h)
       // draw_edges(data.edges,ww,h)
     }
@@ -199,13 +198,11 @@ function App() {
 
 
   const add_stop = (stop) =>{
-    console.log("it ran")
     // stops.push(stop)
     setStops([...stops,stop])
   }
 
   const add_friend = (friend) =>{
-    console.log("it ren")
     // friends.push(friend)
     setFriends([...friends,friend])
   }
@@ -227,9 +224,7 @@ function App() {
   }
 
   const find_dist = async ()=>{
-    console.log(stops)
     var req = write_request(false);
-    console.log(req);
     var res = await get_response(req);
     // var path = JSON.parse(res);
     var path=res["path"]
@@ -243,12 +238,10 @@ function App() {
     var res = await get_response(req);
     // var paths = JSON.parse(res);
     var paths = res["paths"]
-    console.log(paths[0])
     draw_paths(paths,ww,h);
   }
 
   const select_on_map = (element)=>{
-    console.log(element.current.id)
     selected_spot.current = element.current;
     setShow_sidebar(false);
   }
@@ -256,10 +249,8 @@ function App() {
   const canvas_click = (x,y)=>{
     if(selected_spot.current!=null){
       selected_spot.current.value = `@${x*1856/ww},${y*1822/h}`;
-      console.log(selected_spot.current.value);
       selected_spot.current = null;
       setShow_sidebar(true);
-      console.log(stops)
     }
     else{
       console.log("x=",x,"y=",y)
