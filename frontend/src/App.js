@@ -88,6 +88,16 @@ const get_data = async ()=>{
   return response.data;
 }
 
+const search_name = async (name) =>{
+  const response = await axios.get(`/rmap/search/?name=${name}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  console.log(response.data)
+  return response.data
+}
+
 const draw_vertices = (vertices,w,h)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
@@ -139,7 +149,7 @@ const draw_paths = (paths,w,h)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height)
-  paths.forEach((path)=>{
+  paths.forEach(({dist,path})=>{
     for(let i=0;i<path.length-1;i++){
       ctx.beginPath();
       ctx.strokeStyle="#000000";
@@ -180,20 +190,22 @@ function App() {
       draw_edges(data.edges,ww,h)
     }
     fetch_data()
-  })
+  },[])
 
-  var stops = [];// list of refs of stop-inputs
-  var friends = [createRef(), createRef()];// list of refs of friend-inputs
+  const [stops, setStops] = useState([]);// list of refs of stop-inputs
+  const [friends, setFriends] = useState([createRef(), createRef()]);// list of refs of friend-inputs
 
 
   const add_stop = (stop) =>{
     console.log("it ran")
-    stops.push(stop)
+    // stops.push(stop)
+    setStops([...stops,stop])
   }
 
   const add_friend = (friend) =>{
     console.log("it ren")
-    friends.push(friend)
+    // friends.push(friend)
+    setFriends([...friends,friend])
   }
 
   const write_request = (ftype)=>{
@@ -213,6 +225,7 @@ function App() {
   }
 
   const find_dist = async ()=>{
+    console.log(stops)
     var req = write_request(false);
     console.log(req);
     var res = await get_response(req);
@@ -225,7 +238,8 @@ function App() {
     var req = write_request(true);
     console.log(req);
     var res = await get_response(req);
-    var paths = JSON.parse(res);
+    // var paths = JSON.parse(res);
+    var paths = res["paths"]
     draw_paths(paths,ww,h);
   }
 
@@ -238,9 +252,10 @@ function App() {
   const canvas_click = (x,y)=>{
     if(selected_spot.current!=null){
       selected_spot.current.value = `@${x*1856/ww},${y*1822/h}`;
-      console.log(selected_spot.current.id);
+      console.log(selected_spot.current.value);
       selected_spot.current = null;
       setShow_sidebar(true);
+      console.log(stops)
     }
     else{
       console.log("x=",x,"y=",y)
@@ -261,7 +276,8 @@ function App() {
         add_friend={add_friend}
         friends_list={friends}
         find_optimal_spot={find_optimal_spot}
-        on_map={select_on_map}>
+        on_map={select_on_map}
+        search={search_name}>
       </SideBar>
     </div>
   );

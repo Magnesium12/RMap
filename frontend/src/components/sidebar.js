@@ -9,7 +9,7 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Accordion from 'react-bootstrap/Accordion';
 
-const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, find_optimal_spot, on_map})=>{
+const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, find_optimal_spot, on_map, search})=>{
     const [stops,setStops] = useState(0);// number of stops
     const [friends, setFriends] = useState(2);// number of friends
 
@@ -34,7 +34,7 @@ const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, fin
         let stop_input = (
             <>
                 <br></br>
-                <input type="text" id={`s${stops+1}`} key={`s${stops+1}`} ref={x}/><button title='Select on Map' onClick={()=>{on_map(x)}}>⌖</button>
+                <input type="text" id={`s${stops+1}`} key={`s${stops+1}`} ref={x} onChange={()=>{search(x.current.value)}}/><button title='Select on Map' onClick={()=>{on_map(x)}}>⌖</button>
                 <br></br>
                 <div className="vertLine"></div>
             </>
@@ -50,7 +50,7 @@ const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, fin
         let friend_input = (
             <>
                 <br></br>
-                <input type="text" id={`f${friends+1}`} key={`f${friends+1}`} ref={x}/><button title='Select on Map' onClick={()=>{on_map(x)}}>⌖</button>
+                <input type="text" id={`f${friends+1}`} key={`f${friends+1}`} ref={x} onChange={()=>{search(x.current.value)}}/><button title='Select on Map' onClick={()=>{on_map(x)}}>⌖</button>
             </>
         )
         setFriendHtml([...friendHtml, friend_input])
@@ -72,7 +72,7 @@ const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, fin
             <Accordion.Item eventKey="0">
                 <Accordion.Header>Directions</Accordion.Header>
                 <Accordion.Body>
-                    <input type="text" name="src" id="src" ref={src}/><button title='Select on Map' onClick={()=>{on_map(src)}}>⌖</button>
+                    <input type="text" name="src" id="src" ref={src} onChange={()=>{search(src.current.value)}}/><button title='Select on Map' onClick={()=>{on_map(src)}}>⌖</button>
                     <br></br>
                     <div className="vertLine"></div>
                     {stopHtml}
@@ -81,7 +81,7 @@ const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, fin
                     <br></br>
                     <div className="vertLine"></div>
                     <br></br>
-                    <input type="text" name="dest" id="dest" ref={dest}/><button title='Select on Map' onClick={()=>{on_map(dest)}}>⌖</button>
+                    <input type="text" name="dest" id="dest" ref={dest} onChange={()=>{search(dest.current.value)}}/><button title='Select on Map' onClick={()=>{on_map(dest)}}>⌖</button>
                     <br></br>
                     <button onClick={()=>{dijk(src,dest)}}>Find</button>
                 </Accordion.Body>
@@ -89,9 +89,9 @@ const SideBar = ({show, dijk, add_stop, src, dest, add_friend, friends_list, fin
             <Accordion.Item eventKey="1">
                 <Accordion.Header>Meet up with Friends</Accordion.Header>
                 <Accordion.Body>
-                    <input type="text" id="f1" key="f1" ref={friends_list[0]}/><button title='Select on Map' onClick={()=>{on_map(friends_list[0])}}>⌖</button> 
+                    <input type="text" id="f1" key="f1" ref={friends_list[0]} onChange={()=>{search(friends_list[0].current.value)}}/><button title='Select on Map' onClick={()=>{on_map(friends_list[0])}}>⌖</button> 
                     <br></br>
-                    <input type="text" id="f2" key="f2" ref={friends_list[1]}/><button title='Select on Map' onClick={()=>{on_map(friends_list[1])}}>⌖</button>
+                    <input type="text" id="f2" key="f2" ref={friends_list[1]} onChange={()=>{search(friends_list[0].current.value)}}/><button title='Select on Map' onClick={()=>{on_map(friends_list[1])}}>⌖</button>
                     {friendHtml}
                     <br></br>
                     <button onClick={addFriend}>+ Friend</button>
@@ -115,6 +115,7 @@ SideBar.propTypes = {
     dest: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
     add_friend: PropTypes.func.isRequired,
     friends_list: PropTypes.arrayOf(PropTypes.shape({ current: PropTypes.instanceOf(Element) })).isRequired,
+    search: PropTypes.func.isRequired,
   };
 
 export default SideBar
