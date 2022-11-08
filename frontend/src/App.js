@@ -7,7 +7,7 @@ import './components/sidebar.css'
 import SideBar from './components/sidebar.js'
 import Canvas from './components/canvas.js';
 
-import React, { createRef } from 'react';
+import React, { createRef, useEffect } from 'react';
 import { useState, useRef } from 'react';
 
 import axios from "axios"
@@ -53,6 +53,8 @@ var dummy_path2 = [
 
 var dummy_paths = [dummy_path,dummy_path2];
 
+
+
 const draw = (canvas,h,w) => {
   // Draws the canvas
   let ctx = canvas.current.getContext('2d');
@@ -61,39 +63,79 @@ const draw = (canvas,h,w) => {
   ctx.strokeRect(0, 0, w, h)
 };
 
-const get_response = (request) =>{
-  var params = JSON.stringify(request)
-  return axios.get(`/rmap/dijk/`, params, {
+const get_response = async (request) =>{
+  // var params = JSON.stringify(request)
+  var params=request
+  console.log(params)
+  const response = await axios.post(`/rmap/directions/`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    params: params
+  },
+  
+  );
+  console.log(response.data)
+  return response.data;
+}
+
+const get_data = async ()=>{
+  const response = await axios.get(`/rmap/get_data/`, {
     headers: {
       'Content-Type': 'application/json'
     }
-  })
+  });
+  return response.data;
 }
 
-const draw_path = (path)=>{
+const draw_vertices = (vertices,w,h)=>{
+  var c = document.getElementById("canvas");
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height)
+  for(let i=0;i<vertices.length-1;i++){
+    ctx.fillRect(vertices[i].x*w/1856,vertices[i].y*h/1822,3,3)
+    ctx.font = "10px Arial";
+    ctx.fillText(vertices[i].name,vertices[i].x*w/1856,vertices[i].y*h/1822+9);
+  }
+}
+
+const draw_edges = (edges,w,h)=>{
+  var c = document.getElementById("canvas");
+  var ctx = c.getContext("2d");
+  // ctx.clearRect(0,0,c.width,c.height)
+  for(let i=0;i<edges.length-1;i++){
+    ctx.beginPath();
+    ctx.strokeStyle="#FF0000";
+    ctx.moveTo(edges[i].x0*w/1856 + 1.5, edges[i].y0*h/1822 + 1.5);
+    ctx.lineTo(edges[i].x1*w/1856 + 1.5, edges[i].y1*h/1822 + 1.5);
+    ctx.stroke();
+  }
+}
+
+const draw_path = (path,w,h)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height)
   for(let i=0;i<path.length-1;i++){
     ctx.beginPath();
     ctx.strokeStyle="#000000";
-    ctx.moveTo(path[i].x, path[i].y);
-    ctx.lineTo(path[i+1].x, path[i+1].y);
+    ctx.moveTo(path[i].x*w/1856, path[i].y*h/1822);
+    ctx.lineTo(path[i+1].x*w/1856, path[i+1].y*h/1822);
     ctx.stroke();
     ctx.font = "15px Arial";
-    ctx.fillText(path[i].name,path[i].x,path[i].y+9);
+    ctx.fillText(path[i].name,path[i].x*w/1856,path[i].y*h/1822+9);
   }
   ctx.font = "15px Arial";
-  ctx.fillText(path[path.length-1].name,path[path.length-1].x,path[path.length-1].y+9);
+  ctx.fillText(path[path.length-1].name,path[path.length-1].x*w/1856,path[path.length-1].y*h/1822+9);
   var desImg = new Image(30,30);
   desImg.src = destination;
-  desImg.onload = ()=>{ctx.drawImage(desImg,path[path.length-1].x-15,path[path.length-1].y-30,30,30)}
+  desImg.onload = ()=>{ctx.drawImage(desImg,path[path.length-1].x*w/1856-15,path[path.length-1].y*h/1822-30,30,30)}
   var srcImg = new Image(30,30);
   srcImg.src = source;
-  srcImg.onload = ()=>{ctx.drawImage(srcImg,path[0].x-15,path[0].y-30,30,30)}
+  srcImg.onload = ()=>{ctx.drawImage(srcImg,path[0].x*w/1856-15,path[0].y*h/1822-30,30,30)}
 }
 
-const draw_paths = (paths)=>{
+const draw_paths = (paths,w,h)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height)
@@ -101,20 +143,20 @@ const draw_paths = (paths)=>{
     for(let i=0;i<path.length-1;i++){
       ctx.beginPath();
       ctx.strokeStyle="#000000";
-      ctx.moveTo(path[i].x, path[i].y);
-      ctx.lineTo(path[i+1].x, path[i+1].y);
+      ctx.moveTo(path[i].x*w/1856, path[i].y*h/1822);
+      ctx.lineTo(path[i+1].x*w/1856, path[i+1].y*h/1822);
       ctx.stroke();
       ctx.font = "15px Arial";
-      ctx.fillText(path[i].name,path[i].x,path[i].y-8);
+      ctx.fillText(path[i].name,path[i].x*w/1856,path[i].y*h/1822-8);
     }
     ctx.font = "15px Arial";
-    ctx.fillText(path[path.length-1].name,path[path.length-1].x,path[path.length-1].y+9);
+    ctx.fillText(path[path.length-1].name,path[path.length-1].x*w/1856,path[path.length-1].y*h/1822+9);
     var desImg = new Image(30,30);
     desImg.src = destination;
-    desImg.onload = ()=>{ctx.drawImage(desImg,path[path.length-1].x-15,path[path.length-1].y-30,30,30)}
+    desImg.onload = ()=>{ctx.drawImage(desImg,path[path.length-1].x*w/1856-15,path[path.length-1].y*h/1822-30,30,30)}
     var srcImg = new Image(30,30);
     srcImg.src = source;
-    srcImg.onload = ()=>{ctx.drawImage(srcImg,path[0].x-15,path[0].y-30,30,30)}
+    srcImg.onload = ()=>{ctx.drawImage(srcImg,path[0].x*w/1856-15,path[0].y*h/1822-30,30,30)}
   })
 }
 
@@ -127,6 +169,18 @@ function App() {
   const selected_spot = useRef();
 
   const [show_sidebar, setShow_sidebar] = useState(true);
+
+  useEffect(()=>{
+    async function fetch_data(){
+      var data = await get_data()
+      // console.log(raw_data)
+      // var data = JSON.parse(raw_data)
+      console.log(data)
+      draw_vertices(data.vertices,ww,h)
+      draw_edges(data.edges,ww,h)
+    }
+    fetch_data()
+  })
 
   var stops = [];// list of refs of stop-inputs
   var friends = [createRef(), createRef()];// list of refs of friend-inputs
@@ -144,34 +198,35 @@ function App() {
 
   const write_request = (ftype)=>{
     var ans = {
-      friends_present: (ftype),
-      stops_present: (!ftype)&&(stops.length>0),
-      src: src.current.value,
-      dest: dest.current.value,
-      stops: stops.map((stop)=>{
+      friends_present: (ftype)?1:0,
+      stops_present: ((!ftype)&&(stops.length>0))?1:0,
+      src: (ftype)?"":src.current.value,
+      dest: (ftype)?"":dest.current.value,
+      stops: (ftype)?[]:stops.map((stop)=>{
         return stop.current.value;
       }),
-      friends: friends.map((friend)=>{
+      friends: (!ftype)?[]:friends.map((friend)=>{
         return friend.current.value;
       }),
     };
     return JSON.stringify(ans);
   }
 
-  const find_dist = ()=>{
+  const find_dist = async ()=>{
     var req = write_request(false);
     console.log(req);
-    //var res = get_response(req);
-    //var path = JSON.parse(res);
-    draw_path(dummy_path);
+    var res = await get_response(req);
+    // var path = JSON.parse(res);
+    var path=res["path"]
+    draw_path(path,ww,h);
   }
 
-  const find_optimal_spot = ()=>{
+  const find_optimal_spot = async()=>{
     var req = write_request(true);
     console.log(req);
-    //var res = get_response(req);
-    //var paths = JSON.parse(res);
-    draw_paths(dummy_paths);
+    var res = await get_response(req);
+    var paths = JSON.parse(res);
+    draw_paths(paths,ww,h);
   }
 
   const select_on_map = (element)=>{
@@ -182,7 +237,7 @@ function App() {
 
   const canvas_click = (x,y)=>{
     if(selected_spot.current!=null){
-      selected_spot.current.value = `@x:${x},y:${y}`;
+      selected_spot.current.value = `@${x*1856/ww},${y*1822/h}`;
       console.log(selected_spot.current.id);
       selected_spot.current = null;
       setShow_sidebar(true);
@@ -192,8 +247,8 @@ function App() {
     }
   }
 
-  let ww = window.innerWidth - 60;
-  let h = Math.ceil(977*ww/996);
+  var ww = window.innerWidth - 60;
+  var h = Math.ceil(977*ww/996);
   
   return (
     <div className="App">
