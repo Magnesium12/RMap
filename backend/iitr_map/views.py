@@ -21,9 +21,11 @@ def give_directions(request):
     # print(request)
     # print(request.POST)
     # print(request.GET)
-    print(request.data)
+    print(request.data['params'])
 
     params = json.loads(request.data['params'])
+
+    print(params)
 
     # print(params)
 
@@ -39,11 +41,11 @@ def give_directions(request):
         try:
             paths: list[tuple[int, list[Vertex]]] = find_optimal_spot(friends)
         except VertexDoesNotExist:
-            # print("here")
             return Response(status=status.HTTP_404_NOT_FOUND)
         data = {"paths":[]}
+        print("here")
         for d,path in paths:
-            # print(d)
+            print(d)
             serializer = VertexSerializer(path, many = True)
             path_data = {"dist":d,"path":serializer.data}
             data["paths"].append(path_data)
@@ -121,7 +123,7 @@ def find_optimal_spot(friends: list[str])-> list[tuple[int, list[Vertex]]]:
 
     min_dist = min(final_dist.values())
     result =  [ver for ver in final_dist if final_dist[ver] == min_dist]
-    optimum_point = result[0]
+    optimum_point = result[int(len(result)/2)]
 
     path_list = []
     for f in f_list:
@@ -250,10 +252,10 @@ def search(request):
 
 @api_view(['GET'])
 def send_data(request):
-    vertices = Vertex.objects.all()
+    vertices = Vertex.objects.filter(is_prominent=True)
     edges = []
     for v in vertices:
-        for n in v.neighbors.all():
+        for n in v.neighbors.filter(is_prominent=True):
             edges.append({
                         "x0":v.x,
                         "y0":v.y,

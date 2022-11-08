@@ -122,7 +122,7 @@ const draw_edges = (edges,w,h)=>{
   }
 }
 
-const draw_path = (path,w,h)=>{
+const draw_path = (path,w,h,d)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height)
@@ -137,6 +137,7 @@ const draw_path = (path,w,h)=>{
   }
   ctx.font = "15px Arial";
   ctx.fillText(path[path.length-1].name,path[path.length-1].x*w/1856,path[path.length-1].y*h/1822+9);
+  ctx.fillText(`(${d}km)`,path[path.length-1].x*w/1856,path[path.length-1].y*h/1822-10);
   var desImg = new Image(30,30);
   desImg.src = destination;
   desImg.onload = ()=>{ctx.drawImage(desImg,path[path.length-1].x*w/1856-15,path[path.length-1].y*h/1822-30,30,30)}
@@ -149,24 +150,25 @@ const draw_paths = (paths,w,h)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
   ctx.clearRect(0,0,c.width,c.height)
-  paths.forEach(({dist,path})=>{
-    for(let i=0;i<path.length-1;i++){
+  paths.forEach((p)=>{
+    for(let i=0;i<p.path.length-1;i++){
       ctx.beginPath();
       ctx.strokeStyle="#000000";
-      ctx.moveTo(path[i].x*w/1856, path[i].y*h/1822);
-      ctx.lineTo(path[i+1].x*w/1856, path[i+1].y*h/1822);
+      ctx.moveTo(p.path[i].x*w/1856, p.path[i].y*h/1822);
+      ctx.lineTo(p.path[i+1].x*w/1856, p.path[i+1].y*h/1822);
       ctx.stroke();
       ctx.font = "15px Arial";
-      ctx.fillText(path[i].name,path[i].x*w/1856,path[i].y*h/1822-8);
+      ctx.fillText(p.path[i].name,p.path[i].x*w/1856,p.path[i].y*h/1822-8);
     }
     ctx.font = "15px Arial";
-    ctx.fillText(path[path.length-1].name,path[path.length-1].x*w/1856,path[path.length-1].y*h/1822+9);
+    ctx.fillText(p.path[p.path.length-1].name,p.path[p.path.length-1].x*w/1856,p.path[p.path.length-1].y*h/1822+9);
+    ctx.fillText(`(${p.dist}km)`,p.path[0].x*w/1856,p.path[0].y*h/1822+10);
     var desImg = new Image(30,30);
     desImg.src = destination;
-    desImg.onload = ()=>{ctx.drawImage(desImg,path[path.length-1].x*w/1856-15,path[path.length-1].y*h/1822-30,30,30)}
+    desImg.onload = ()=>{ctx.drawImage(desImg,p.path[p.path.length-1].x*w/1856-15,p.path[p.path.length-1].y*h/1822-30,30,30)}
     var srcImg = new Image(30,30);
     srcImg.src = source;
-    srcImg.onload = ()=>{ctx.drawImage(srcImg,path[0].x*w/1856-15,path[0].y*h/1822-30,30,30)}
+    srcImg.onload = ()=>{ctx.drawImage(srcImg,p.path[0].x*w/1856-15,p.path[0].y*h/1822-30,30,30)}
   })
 }
 
@@ -187,7 +189,7 @@ function App() {
       // var data = JSON.parse(raw_data)
       console.log(data)
       draw_vertices(data.vertices,ww,h)
-      draw_edges(data.edges,ww,h)
+      // draw_edges(data.edges,ww,h)
     }
     fetch_data()
   },[])
@@ -231,7 +233,8 @@ function App() {
     var res = await get_response(req);
     // var path = JSON.parse(res);
     var path=res["path"]
-    draw_path(path,ww,h);
+    var d = res["dist"]
+    draw_path(path,ww,h,d);
   }
 
   const find_optimal_spot = async()=>{
@@ -240,6 +243,7 @@ function App() {
     var res = await get_response(req);
     // var paths = JSON.parse(res);
     var paths = res["paths"]
+    console.log(paths[0])
     draw_paths(paths,ww,h);
   }
 
