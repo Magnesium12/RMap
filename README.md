@@ -46,7 +46,9 @@ This is [our](#contributors) submission for CSN-291 Course Project.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-The requisite tech stack to run the project is listed in requirements.txt file that can be installed using the command **pip install -r requirements.txt** and running the command **npm start** in the frontend and **python manage.py runserver** to run the backend server.
+The requisite tech stack to run the backend is listed in requirements.txt file that can be installed using the command `pip install -r requirements.txt`.
+For installing requisites for frontend, type command `npm install` in frontend folder.
+For running the frontend, type command `npm start` in the frontend folder and for backend, type `python manage.py runserver` in backend folder.
 
 To use this application follow these steps:
 
