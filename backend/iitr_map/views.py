@@ -17,17 +17,8 @@ from .serializers import VertexSerializer
 # Create your views here.
 @api_view(['GET','POST'])
 def give_directions(request):
-    
-    # print(request)
-    # print(request.POST)
-    # print(request.GET)
-    # print(request.data['params'])
 
     params = json.loads(request.data['params'])
-
-    # print(params)
-
-    # print(params)
 
     friends_present = params.get("friends_present")
     stops_present = params.get("stops_present")
@@ -35,7 +26,6 @@ def give_directions(request):
     dest = params.get("dest")
     stops = params.get("stops")
     friends = params.get("friends")
-    # print(src,dest)
 
     if(friends_present==1):
         try:
@@ -43,39 +33,32 @@ def give_directions(request):
         except VertexDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         data = {"paths":[]}
-        # print("here")
         for d,path in paths:
-            # print(d)
             serializer = VertexSerializer(path, many = True)
-            path_data = {"dist":d,"path":serializer.data}
+            path_data = {"dist":int(d*0.6911),"path":serializer.data}
             data["paths"].append(path_data)
 
     elif(stops_present==1):
-        # print("stoooop")
         try:
             (d,path) = dijkstra_with_stops(src,stops,dest)
         except VertexDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = VertexSerializer(path, many = True)
-        data = {"dist":d,"path":serializer.data}
+        data = {"dist":int(d*0.6911),"path":serializer.data}
     else:
         try:
             (d,path)= dijkstra(src,dest)
         except VertexDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        # print(d,path)
         serializer = VertexSerializer(path, many = True)
-        # d=0
-        data = {"dist":d,"path":serializer.data}
+        data = {"dist":int(d*0.6911),"path":serializer.data}
 
     return Response(data=data)
 
 def find_optimal_spot(friends: list[str])-> list[tuple[int, list[Vertex]]]:
     try:
         f_list = [get_vertex(f) for f in friends]
-        # print(f_list)
     except:
-        # print("here too")
         raise VertexDoesNotExist
 
     all_vertices = Vertex.objects.all()
@@ -143,8 +126,6 @@ def dijkstra_with_stops(src: str, stops: list[str], dest: str)-> tuple[int, list
 
     final_path = []
     final_dist = 0
-
-    # print(stops)
     
     for i in range(len(stops)-1):
         
@@ -157,12 +138,10 @@ def dijkstra_with_stops(src: str, stops: list[str], dest: str)-> tuple[int, list
     return (final_dist, final_path)
 
 def dijkstra(src: str, dest: str)-> tuple[int, list[Vertex]]:
-    # print(src,dest)
     try:
         x = get_vertex(src)
         y = get_vertex(dest)
     except Exception as e:
-        # print("fuck u")
         # print(e)
         raise VertexDoesNotExist
 
@@ -217,9 +196,7 @@ def dijkstra(src: str, dest: str)-> tuple[int, list[Vertex]]:
 
 def get_vertex(name: str)-> Vertex:
     if(name[0]=='@'):
-        # print("f u",name[1:])
         [x,y] = [float(k) for k in name[1:].split(',')]
-        # print(x,y)
         v = find_closest_vertex(x,y)
     else:
         v = Vertex.objects.get(name=name)
@@ -228,18 +205,15 @@ def get_vertex(name: str)-> Vertex:
 def find_closest_vertex(x: int,y: int) -> Vertex:
     all_vertices = Vertex.objects.all()
     dist = inf
-    # print(x,y,dist)
     for v in all_vertices:
         if (math.sqrt((v.x-x)**2 + (v.y-y)**2) < dist):
             dist = math.sqrt((v.x-x)**2 + (v.y-y)**2)
             ver = v
-    # print(ver)
     return ver
 
 @api_view(['GET'])
 def search(request):
     name = request.GET.get("name")
-    # print(name)
     vertices = Vertex.objects.all()
     matches = []
     for v in vertices:
