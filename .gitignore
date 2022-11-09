@@ -4,13 +4,13 @@ node_modules
 # backend
 
 # # database
-db.sqlite3
+# db.sqlite3
 
 # # cache files
 **_pycache__
 
 # # project environment
-.env
+# .env
 
 # virtual environment
 venv
