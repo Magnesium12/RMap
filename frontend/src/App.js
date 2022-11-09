@@ -15,46 +15,6 @@ import axios from "axios"
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 axios.defaults.xsrfCookieName = 'csrftoken'
 
-// var dummy_path = [
-//   {
-//     x:900,
-//     y:100,
-//     name:"loc1"
-//   },
-//   {
-//     x:200,
-//     y:200,
-//     name:""
-//   },
-//   {
-//     x:100,
-//     y:300,
-//     name:"loc2"
-//   }
-// ]
-
-// var dummy_path2 = [
-//   {
-//     x:100,
-//     y:400,
-//     name:"loc3"
-//   },
-//   {
-//     x:200,
-//     y:500,
-//     name:"loc4"
-//   },
-//   {
-//     x:100,
-//     y:300,
-//     name:"loc5"
-//   }
-// ]
-
-// var dummy_paths = [dummy_path,dummy_path2];
-
-
-
 const draw = (canvas,h,w) => {
   // Draws the canvas
   let ctx = canvas.current.getContext('2d');
@@ -64,7 +24,6 @@ const draw = (canvas,h,w) => {
 };
 
 const get_response = async (request) =>{
-  // var params = JSON.stringify(request)
   var params=request
   console.log(params)
   const response = await axios.post(`/rmap/directions/`, {
@@ -112,7 +71,6 @@ const draw_vertices = (vertices,w,h)=>{
 const draw_edges = (edges,w,h)=>{
   var c = document.getElementById("canvas");
   var ctx = c.getContext("2d");
-  // ctx.clearRect(0,0,c.width,c.height)
   for(let i=0;i<edges.length-1;i++){
     ctx.beginPath();
     ctx.strokeStyle="#FF0000";
@@ -173,8 +131,6 @@ const draw_paths = (paths,w,h)=>{
 }
 
 function App() {
-  // const [operation, setOperation] = useState("");
-
   const src = useRef();
   const dest = useRef();
 
@@ -185,8 +141,6 @@ function App() {
   useEffect(()=>{
     async function fetch_data(){
       var data = await get_data()
-      // console.log(raw_data)
-      // var data = JSON.parse(raw_data)
       draw_vertices(data.vertices,ww,h)
       // draw_edges(data.edges,ww,h)
     }
@@ -198,12 +152,10 @@ function App() {
 
 
   const add_stop = (stop) =>{
-    // stops.push(stop)
     setStops([...stops,stop])
   }
 
   const add_friend = (friend) =>{
-    // friends.push(friend)
     setFriends([...friends,friend])
   }
 
@@ -226,7 +178,6 @@ function App() {
   const find_dist = async ()=>{
     var req = write_request(false);
     var res = await get_response(req);
-    // var path = JSON.parse(res);
     var path=res["path"]
     var d = res["dist"]
     draw_path(path,ww,h,d);
@@ -236,7 +187,6 @@ function App() {
     var req = write_request(true);
     console.log(req);
     var res = await get_response(req);
-    // var paths = JSON.parse(res);
     var paths = res["paths"]
     draw_paths(paths,ww,h);
   }
@@ -280,4 +230,3 @@ function App() {
 
 export default App;
 
-// 926, 944
